@@ -89,6 +89,7 @@ agg_feature_extractors:
       ]
     agg_methods: ["std", "mean"]
     extr_agg_methods: [] # [] # ["z-score"]
+    transform_method: first
     parents:
       - _target_: src.experiment.customs.feature.EmployeeMoneyFeatureExtractorV1
       - _target_: src.experiment.customs.feature.UrbanRuralFeatureExtractorV1
