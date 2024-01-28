@@ -3,8 +3,8 @@
 # to execute this experiment run:
 # python train.py experiment=example
 
-defaults:
-  - override /cat: "01"
+# defaults:
+#   - override /hogehoge: default
 
 # all parameters below will be merged with parameters from default configurations set above
 # this allows you to overwrite only specified parameters
@@ -13,13 +13,15 @@ experiment_name: ${hydra:job.override_dirname}
 notebook: v01
 
 debug: false
+seed: 8823
 
 feature_store: default
+cache_feature_extractors: false
 overwrite_training: true
 
 cv:
   _target_: sklearn.model_selection.StratifiedGroupKFold
-  n_splits: 10
+  n_splits: 5
   random_state: 0
   shuffle: true
 
@@ -49,38 +51,13 @@ feature_extractors:
       - SBA_Appv
 
   # ordinal encorded features
-  - _target_: src.experiment.feature.tabular.OrdinalFeatureExtractorV1
+  - _target_: src.experiment.feature.tabular.OrdinalFeatureExtractor
     input_cols: [City, State, BankState]
 
+agg_feature_extractors:
   # aggregated features
-  - _target_: src.experiment.feature.tabular.AggregatedFeatureExtractorV1
-    group_keys: [
-        ## raw features
-        City,
-        State,
-        BankState,
-        Sector,
-        ApprovalFY,
-        NewExist,
-
-        ## engineered features
-        LowDoc_label,
-        RevLineCr_dummy,
-        UrbanRural_dummy,
-        same_State_BankState_dummy,
-
-        ## cross features
-        [LowDoc_label, RevLineCr_dummy],
-        [LowDoc_label, UrbanRural_dummy],
-        [LowDoc_label, same_State_BankState_dummy],
-        [RevLineCr_dummy, UrbanRural_dummy],
-        [RevLineCr_dummy, same_State_BankState_dummy],
-        [UrbanRural_dummy, same_State_BankState_dummy],
-        [NewExist, LowDoc_label],
-        [NewExist, RevLineCr_dummy],
-        [NewExist, UrbanRural_dummy],
-        [NewExist, same_State_BankState_dummy],
-      ]
+  - _target_: src.experiment.feature.tabular.AggregatedFeatureExtractor
+    group_keys: null # set in runtime (use group_keys_for_agg)
     group_values: [
         ## raw features
         Term,
@@ -117,9 +94,38 @@ feature_extractors:
       - _target_: src.experiment.customs.feature.UrbanRuralFeatureExtractorV1
       - _target_: src.experiment.customs.feature.RevLineCrExtractorV1
       - _target_: src.experiment.customs.feature.LowDocExtractorV1
+      - _target_: src.experiment.customs.feature.StateFeatureExtractorV1
+
+group_keys_for_agg: [
+    ## raw features
+    [City],
+    [State],
+    [BankState],
+    [Sector],
+    [ApprovalFY],
+    [NewExist],
+
+    ## engineered features
+    [LowDoc_label],
+    [RevLineCr_dummy],
+    [UrbanRural_dummy],
+    [same_State_BankState_dummy],
+
+    ## cross features
+    [LowDoc_label, RevLineCr_dummy],
+    [LowDoc_label, UrbanRural_dummy],
+    [LowDoc_label, same_State_BankState_dummy],
+    [RevLineCr_dummy, UrbanRural_dummy],
+    [RevLineCr_dummy, same_State_BankState_dummy],
+    [UrbanRural_dummy, same_State_BankState_dummy],
+    [NewExist, LowDoc_label],
+    [NewExist, RevLineCr_dummy],
+    [NewExist, UrbanRural_dummy],
+    [NewExist, same_State_BankState_dummy],
+  ]
 
 # change random_state and num_leaves (lightgbm)
-seed_average_seeds: [0, 1]
+seed_average_seeds: [31, 51, 71]
 model:
   predict_proba: false
   estimator:
@@ -127,6 +133,7 @@ model:
     # https://lightgbm.readthedocs.io/en/latest/pythonapi/lightgbm.LGBMModel.html#lightgbm.LGBMModel
     n_estimators: 10000
     num_leaves: 31
+    # metric: auc
     learning_rate: 0.05
     objective: binary
     colsample_bytree: 0.2
