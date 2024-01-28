@@ -31,7 +31,7 @@ def train_cv_tabular_v1(
     use_xgb_class_weight: bool | None = False,
     use_eval_set: bool = True,
 ) -> list[estimator_types]:
-    """train cv for xgboost estimator"""
+    """Train cv for xgboost estimator."""
     estimators = []
 
     if fit_params is None:

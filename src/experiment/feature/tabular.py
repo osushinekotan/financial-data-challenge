@@ -167,7 +167,10 @@ class OrdinalFeatureExtractor(BaseFeatureExtractor):
 
 
 class ConcatCombinationOrdinalEncoder(BaseFeatureExtractor):
-    """Generate combination of string columns. (xfeat style)"""
+    """Generate combination of string columns.
+
+    (xfeat style)
+    """
 
     def __init__(
         self,
@@ -229,3 +232,12 @@ class ConcatCombinationOrdinalEncoder(BaseFeatureExtractor):
         df = self.make_categorical_feature_df(input_df)
         output_df = self.oe.transform(df).add_prefix("oe_")
         return output_df
+
+
+class RawExtractor(BaseFeatureExtractor):
+    def __init__(self, cols: list[str]) -> None:
+        self.cols = cols
+
+    def transform(self, input_df: pd.DataFrame) -> pd.DataFrame:  # type: ignore
+        output_df = input_df[self.cols].copy()
+        return output_df.astype(np.float32)

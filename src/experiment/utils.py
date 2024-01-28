@@ -1,13 +1,45 @@
 import hashlib
 import json
+import math
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
 from matplotlib.figure import Figure
+from matplotlib_venn import venn2
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import BaseCrossValidator
+
+
+def plot_venn_diagrams(train_df: pd.DataFrame, test_df: pd.DataFrame, cat_cols: list[str]) -> None:
+    # サブプロットの行と列の数を計算
+    n_cols = int(math.ceil(math.sqrt(len(cat_cols))))
+    n_rows = int(math.ceil(len(cat_cols) / n_cols))
+
+    # 図とサブプロットのセットアップ
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(5 * n_cols, 5 * n_rows))
+
+    if n_rows == 1 or n_cols == 1:
+        axes = [axes]
+
+    # 各カラムに対してベン図を描画
+    for i, col in enumerate(cat_cols):
+        ax = axes[i // n_cols, i % n_cols] if n_rows > 1 and n_cols > 1 else axes[i]
+
+        # train_df と test_df からユニークな値を取得
+        train_values = set(train_df[col].dropna().unique())
+        test_values = set(test_df[col].dropna().unique())
+
+        # ベン図の描画
+        venn2([train_values, test_values], set_labels=("train", "test"), ax=ax)
+        ax.set_title(f"{col}")
+
+    for i in range(len(cat_cols), n_rows * n_cols):
+        fig.delaxes(axes[i // n_cols, i % n_cols])
+
+    plt.tight_layout()
+    plt.show()
 
 
 def assign_fold_index(
@@ -93,8 +125,8 @@ def visualize_feature_importance(
 
 
 def plot_confusion_matrix(y_true: np.ndarray, y_pred: np.ndarray, normalize: bool = False) -> Figure:
-    """
-    This function computes and returns a confusion matrix as a matplotlib figure.
+    """This function computes and returns a confusion matrix as a matplotlib figure.
+
     :param y_true: Array of true labels
     :param y_pred: Array of predicted labels
     :param normalize: Boolean, whether to normalize the confusion matrix or not
@@ -115,8 +147,8 @@ def plot_confusion_matrix(y_true: np.ndarray, y_pred: np.ndarray, normalize: boo
 
 
 def plot_label_distributions(proba_matrix: np.ndarray) -> Figure:
-    """
-    Plots the distribution of probabilities for each label in the given matrix and returns the figure.
+    """Plots the distribution of probabilities for each label in the given matrix and returns the
+    figure.
 
     Parameters:
     proba_matrix (numpy.ndarray): A matrix of shape (n, num_labels) containing probabilities.
