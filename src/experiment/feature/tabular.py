@@ -24,7 +24,7 @@ class AggregatedFeatureExtractor(BaseFeatureExtractor):
         self.group_keys = list(group_keys)
         self.group_values = list(group_values)
         self.agg_methods = list(agg_methods)
-        self.transform_method = transform_method
+        self.transform_method = str(transform_method) if transform_method is not None else None
         self.extr_agg_methods = list(extr_agg_methods)
 
         self.df_agg = None
