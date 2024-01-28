@@ -1,0 +1,53 @@
+# @package _global_
+
+# to execute this experiment run:
+# python train.py experiment=example
+
+defaults:
+  - override /cat: "01"
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+experiment_name: ${hydra:job.override_dirname}
+notebook: v01
+
+feature_store: default
+overwrite_training: true
+
+cv:
+  _target_: sklearn.model_selection.StratifiedGroupKFold
+  n_splits: 10
+  random_state: 119
+
+feature_extractors:
+group_keys_for_agg:
+
+seed_average_seeds: [0, 1]
+model:
+  predict_proba: false
+  estimator:
+    _target_: lightgbm.LGBMModel
+    # https://lightgbm.readthedocs.io/en/latest/pythonapi/lightgbm.LGBMModel.html#lightgbm.LGBMModel
+    n_estimators: 10000
+    num_leaves: 31
+    learning_rate: 0.001
+    objective: "multiclass"
+    colsample_bytree: 0.2
+    subsample: 0.5
+    random_state: 8823
+    class_weight: "balanced"
+    importance_type: "gain"
+    num_class: 3
+    force_col_wise: true
+    reg_alpha: 1.0
+    reg_lambda: 1.0
+  fit_params:
+    callbacks:
+      - _target_: lightgbm.callback._EarlyStoppingCallback
+        stopping_rounds: 200
+        verbose: true
+        first_metric_only: false
+      - _target_: lightgbm.callback._LogEvaluationCallback
+        period: 100
+        show_stdv: true
