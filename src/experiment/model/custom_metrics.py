@@ -13,6 +13,11 @@ def lgb_macro_f1(y_true, y_pred):
     return "macro_f1", f1, True
 
 
+def lgb_f1(y_true, y_pred):
+    f1 = f1_score(y_true=y_true, y_pred=y_pred >= 0.5)
+    return "f1", f1, True
+
+
 def xgb_macro_f1(y_true, y_pred):
     f1 = f1_score(y_true=y_true, y_pred=y_pred >= 0.5, average="macro")
     return f1
