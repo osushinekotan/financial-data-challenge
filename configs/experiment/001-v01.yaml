@@ -13,7 +13,7 @@ experiment_name: ${hydra:job.override_dirname}
 notebook: v01
 
 debug: false
-seed: 8823
+seed: 8824
 
 feature_store: default
 cache_feature_extractors: false
@@ -140,7 +140,7 @@ model:
     colsample_bytree: 0.2
     subsample: 0.5
     random_state: 8823
-    class_weight: balanced
+    class_weight: null
     importance_type: gain
     force_col_wise: true
     reg_alpha: 1.0
