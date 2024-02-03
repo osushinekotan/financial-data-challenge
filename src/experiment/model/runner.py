@@ -92,6 +92,7 @@ def predict_cv_tabular_v1(
     test: bool = False,
     result_columns: list[str] | None = None,
     predict_proba: bool = True,
+    return_binary: bool = False,
 ) -> pd.DataFrame:
     if result_columns is None:
         result_columns = [col for col in df.columns if col not in feature_columns]
@@ -110,6 +111,11 @@ def predict_cv_tabular_v1(
             va_pred = estimator.predict_proba(va_x)
         else:
             va_pred = estimator.predict(va_x)
+
+        if return_binary:
+            logger.info(f"return binary : {va_pred.shape[1]} → 1")
+            va_pred = va_pred[:, 1]
+
         i_result_df = df[result_columns].assign(pred=va_pred.tolist())
         if test:
             i_result_df = i_result_df.assign(est_fold=i_fold)
