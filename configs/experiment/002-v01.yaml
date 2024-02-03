@@ -13,7 +13,7 @@ experiment_name: ${hydra:job.override_dirname}
 notebook: v01
 
 debug: false
-seed: 8824
+seed: 8825
 
 feature_store: default
 cache_feature_extractors: false
