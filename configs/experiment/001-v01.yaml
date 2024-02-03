@@ -129,6 +129,7 @@ group_keys_for_agg: [
 seed_average_seeds: [31, 51, 71]
 model:
   predict_proba: false
+  use_eval_set: true
   estimator: { _target_: lightgbm.LGBMModel }
   params:
     # https://lightgbm.readthedocs.io/en/latest/pythonapi/lightgbm.LGBMModel.html#lightgbm.LGBMModel
