@@ -12,6 +12,15 @@ rootutils.setup_root(search_from="../", indicator=".project-root", pythonpath=Tr
 from src.experiment.base import BaseFeatureExtractor
 
 
+class TermExtractorV1(BaseFeatureExtractor):
+    def transform(self, input_df):
+        output_df = pd.DataFrame()
+        output_df["Term_bins_01"] = pd.cut(input_df["Term"], bins=[-1, 50, 100, 150, 200, 250, 999], labels=False)
+        output_df["LogTerm"] = np.log1p(input_df["Term"])
+
+        return output_df
+
+
 class DisbursementDateExtractorV1(BaseFeatureExtractor):
     def transform(self, input_df):
         ts = pd.to_datetime(input_df["DisbursementDate"])
