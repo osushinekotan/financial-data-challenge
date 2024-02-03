@@ -71,6 +71,9 @@ def run_extractors(
     cache: bool = True,
     prefix: str = "f_",
 ) -> pd.DataFrame:
+    if not extractors:
+        return pd.DataFrame()
+
     output_df = pd.concat(
         [run_extractor(input_df, extractor, dirpath, fit, cache) for extractor in list(extractors)],
         axis=1,
