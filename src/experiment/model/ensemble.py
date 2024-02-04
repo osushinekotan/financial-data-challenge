@@ -69,8 +69,7 @@ class OptWeightedEnsemble:
             raise Exception("Model has not been fitted yet.")
 
     def set_params(self, **params) -> None:  # type: ignore
-        """
-        Set the parameters of this predictor.
+        """Set the parameters of this predictor.
 
         Parameters
         ----------
@@ -107,8 +106,7 @@ class SimpleAverageEnsemble:
         return np.mean(X, axis=1)
 
     def set_params(self, **params) -> None:  # type: ignore
-        """
-        Set the parameters of this predictor.
+        """Set the parameters of this predictor.
 
         Parameters
         ----------
