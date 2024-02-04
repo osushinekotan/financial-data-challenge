@@ -131,6 +131,8 @@ model:
   predict_proba: false
   use_eval_set: true
   estimator: { _target_: lightgbm.LGBMModel }
+  eval_metrics:
+    - src.experiment.model.custom_metrics.lgb_macro_f1
   params:
     # https://lightgbm.readthedocs.io/en/latest/pythonapi/lightgbm.LGBMModel.html#lightgbm.LGBMModel
     n_estimators: 10000

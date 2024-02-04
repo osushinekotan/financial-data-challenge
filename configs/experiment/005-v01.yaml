@@ -133,6 +133,7 @@ model:
   use_xgb_class_weight: false
   return_binary: true
   estimator: { _target_: xgboost.XGBClassifier }
+  eval_metric: src.experiment.model.custom_metrics.xgb_macro_f1
   # https://xgboost.readthedocs.io/en/stable/python/python_api.html#xgboost.XGBClassifier
   params:
     n_estimators: 10000
