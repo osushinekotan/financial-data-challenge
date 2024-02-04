@@ -13,7 +13,7 @@ experiment_name: ${hydra:job.override_dirname}
 notebook: v01
 
 debug: false
-seed: 12
+seed: 8825
 
 feature_store: default
 cache_feature_extractors: false
@@ -70,98 +70,28 @@ feature_extractors:
       - _target_: src.experiment.customs.feature.LowDocExtractorV1
       - _target_: src.experiment.customs.feature.StateFeatureExtractorV1
 
-agg_feature_extractors:
-  # aggregated features
-  - _target_: src.experiment.feature.tabular.AggregatedFeatureExtractor
-    group_keys: null # set in runtime (use group_keys_for_agg)
-    group_values: [
-        ## raw features
-        MIS_Status,
-        Term,
-        NoEmp,
-        CreateJob,
-        RetainedJob,
-        DisbursementGross,
-        GrAppv,
-        SBA_Appv,
-
-        ## engineered features
-        # employee
-        Create_plus_RetainedJob,
-        NoEmpALL,
-        CreateJob_pre_logTerm,
-        RetainedJob_pre_logTerm,
-        CreateJob_pre_NoEmp,
-        RetainedJob_pre_NoEmp,
-        # money
-        DisbursementGross_pre_logTerm,
-        DisbursementGross_diff_GrAppv,
-        DisbursementGross_diff_SBA_Appv,
-        DisbursementGross_ratio_GrAppv,
-        DisbursementGross_ratio_SBA_Appv,
-        # money + employee
-        DisbursementGross_pre_NoEmp,
-        DisbursementGross_pre_CreateJob,
-        DisbursementGross_pre_RetainedJob,
-      ]
-    agg_methods: ["mean"]
-    extr_agg_methods: [] # [] # ["z-score"]
-    transform_method: first
-    parents:
-      - _target_: src.experiment.customs.feature.EmployeeMoneyFeatureExtractorV1
-      - _target_: src.experiment.customs.feature.UrbanRuralFeatureExtractorV1
-      - _target_: src.experiment.customs.feature.RevLineCrExtractorV1
-      - _target_: src.experiment.customs.feature.LowDocExtractorV1
-      - _target_: src.experiment.customs.feature.StateFeatureExtractorV1
-
-group_keys_for_agg: [
-    ## raw features
-    [City],
-    [State],
-    [BankState],
-    [Sector],
-    [ApprovalFY],
-    [NewExist],
-
-    ## engineered features
-    [LowDoc_label],
-    [RevLineCr_dummy],
-    [UrbanRural_dummy],
-    [same_State_BankState_dummy],
-    # ## cross features
-    # [LowDoc_label, RevLineCr_dummy],
-    # [LowDoc_label, UrbanRural_dummy],
-    # [LowDoc_label, same_State_BankState_dummy],
-    # [RevLineCr_dummy, UrbanRural_dummy],
-    # [RevLineCr_dummy, same_State_BankState_dummy],
-    # [UrbanRural_dummy, same_State_BankState_dummy],
-    # [NewExist, LowDoc_label],
-    # [NewExist, RevLineCr_dummy],
-    # [NewExist, UrbanRural_dummy],
-    # [NewExist, same_State_BankState_dummy],
-  ]
+agg_feature_extractors: []
+group_keys_for_agg: []
 
 # change random_state and num_leaves (lightgbm)
-seed_average_seeds: [11, 21, 31]
+seed_average_seeds: [31, 51, 71]
 model:
   predict_proba: false
   use_eval_set: true
   estimator: { _target_: lightgbm.LGBMModel }
-  # eval_metrics: null
-  # eval_metrics:
-  #   - src.experiment.model.custom_metrics.lgb_macro_f1
+  eval_metrics:
+    - src.experiment.model.custom_metrics.lgb_macro_f1
   params:
     # https://lightgbm.readthedocs.io/en/latest/pythonapi/lightgbm.LGBMModel.html#lightgbm.LGBMModel
     n_estimators: 10000
     num_leaves: 31
     # metric: auc
     learning_rate: 0.05
-    # https://lightgbm.readthedocs.io/en/latest/Parameters.html
-    objective: rmse
+    objective: binary
     colsample_bytree: 0.2
     subsample: 0.5
     random_state: 8823
-    # class_weight: { 0: 1, 1: 2 }
+    class_weight: { 0: 1, 1: 2 }
     importance_type: gain
     force_col_wise: true
     reg_alpha: 1.0
