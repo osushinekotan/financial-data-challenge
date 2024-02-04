@@ -45,7 +45,12 @@ def train_cv_tabular_v1(
 
     for i_fold in train_folds:
         logger.info(f"start training fold={i_fold} 🚀 ")
-        fit_estimator = clone(estimator)
+
+        try:
+            fit_estimator = clone(estimator)
+        except TypeError as e:
+            logger.error(f"clone error : {e}")
+            fit_estimator = estimator
 
         output_df_fold = output_dir / f"fold{i_fold}"
         output_df_fold.mkdir(exist_ok=True, parents=True)
