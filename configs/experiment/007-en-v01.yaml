@@ -42,7 +42,7 @@ ensemble_exps:
 
 ensemble_pred_cols:
   - pred
-  # - pred_label
+  - pred_label
 
 # change random_state and num_leaves (lightgbm)
 seed_average_seeds: [1]
