@@ -1,0 +1,56 @@
+# @package _global_
+
+# to execute this experiment run:
+# python train.py experiment=example
+
+# defaults:
+#   - override /hogehoge: default
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+experiment_name: ${hydra:job.override_dirname}
+notebook: v01
+
+debug: false
+seed: 8826
+
+feature_store: default
+cache_feature_extractors: false
+overwrite_training: true
+
+cv:
+  _target_: sklearn.model_selection.StratifiedGroupKFold
+  n_splits: 5
+  random_state: 0
+  shuffle: true
+
+feature_extractors: []
+agg_feature_extractors: []
+group_keys_for_agg: []
+
+# use predictions for features (stacking)
+# if null, no stacking
+ensemble_exps:
+  - experiment=000-v01
+  - experiment=001-v01
+  - experiment=002-v01
+  # - experiment=003-v01
+  - experiment=004-en-v01
+  # - experiment=005-v01
+  # - experiment=006-v01
+  - experiment=007-en-v01
+
+ensemble_pred_cols:
+  - pred
+  # - pred_label
+
+# change random_state and num_leaves (lightgbm)
+seed_average_seeds: [1]
+model:
+  predict_proba: false
+  use_eval_set: false
+  return_binary: false
+  estimator: { _target_: src.experiment.model.ensemble.SimpleAverageEnsemble }
+  params: {}
+  fit_params: {}
