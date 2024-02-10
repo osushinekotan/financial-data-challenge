@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Union
 
 import joblib
+import numpy as np
 import pandas as pd
 import rootutils
 from lightgbm import LGBMModel
@@ -71,15 +72,20 @@ def train_cv_tabular_v1(
 
         # split train and valid
         train_df = df.query(f"fold != {i_fold}").reset_index(drop=True)
-
         if binary_down_sampling_rate:
-            sampling_df = train_df[train_df[target_columns] == binary_down_sampling_target].reset_index(drop=True)
-            unsampling_df = train_df[train_df[target_columns] != binary_down_sampling_target].reset_index(drop=True)
+            before_size = len(train_df)
+
+            target_mask = np.array(train_df[target_columns] == binary_down_sampling_target)
+            sampling_df = train_df[target_mask].reset_index(drop=True)
+            unsampling_df = train_df[~target_mask].reset_index(drop=True)
+
             sampling_df = sampling_df.sample(
                 frac=binary_down_sampling_rate,
                 random_state=sampling_seed,
             ).reset_index(drop=True)
             train_df = pd.concat([sampling_df, unsampling_df]).reset_index(drop=True)
+            logger.info(f"under sampling : {before_size} -> {len(train_df)}")
+            logger.info(f"positive ratio : {float(train_df[target_columns].sum()/len(train_df))}")
 
         valid_df = df.query(f"fold == {i_fold}").query("data == 'train'").reset_index(drop=True)
         tr_x, tr_y = train_df[feature_columns], train_df[target_columns]

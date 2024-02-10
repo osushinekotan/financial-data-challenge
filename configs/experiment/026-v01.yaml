@@ -13,7 +13,7 @@ experiment_name: ${hydra:job.override_dirname}
 notebook: v01
 
 debug: false
-seed: 8825
+seed: 26
 
 feature_store: default
 cache_feature_extractors: false
@@ -125,7 +125,7 @@ group_keys_for_agg: [
     [NewExist, same_State_BankState_dummy],
   ]
 
-down_sampling_rate: 0.5
+binary_down_sampling_rate: 0.5
 
 # change random_state and num_leaves (lightgbm)
 seed_average_seeds: [31, 51, 71]
@@ -145,7 +145,7 @@ model:
     colsample_bytree: 0.2
     subsample: 0.5
     random_state: 8823
-    class_weight: { 0: 1, 1: 1 }
+    class_weight: { 0: 1, 1: 2 }
     importance_type: gain
     force_col_wise: true
     reg_alpha: 1.0
