@@ -51,6 +51,18 @@ class ApprovalDateExtractorV1(BaseFeatureExtractor):
         return output_df
 
 
+class DateFeatureExtractorV1(BaseFeatureExtractor):
+    def transform(self, input_df):
+        approval_date = pd.to_datetime(input_df["ApprovalDate"])
+        disbursement_date = pd.to_datetime(input_df["DisbursementDate"])
+
+        output_df = pd.DataFrame()
+        output_df["diff_date"] = (disbursement_date - approval_date).dt.days
+        output_df["diff_date_minus_dummpy"] = output_df["diff_date"] < 0
+
+        return output_df
+
+
 class DisbursementGrossExtractorV1(BaseFeatureExtractor):
     def transform(self, input_df):
         output_df = pd.DataFrame()
