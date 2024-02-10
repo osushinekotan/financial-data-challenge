@@ -58,7 +58,7 @@ class DateFeatureExtractorV1(BaseFeatureExtractor):
 
         output_df = pd.DataFrame()
         output_df["diff_date"] = (disbursement_date - approval_date).dt.days
-        output_df["diff_date_minus_dummpy"] = output_df["diff_date"] < 0
+        output_df["diff_date_minus_dummy"] = output_df["diff_date"] < 0
 
         return output_df
 
