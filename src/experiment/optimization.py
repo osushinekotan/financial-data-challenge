@@ -37,8 +37,9 @@ def opt_macro_f1_score(
 
 def decode_v2(
     y_pred: np.ndarray,
-    num_positive: int,
+    pos_ratio: float,
 ) -> np.ndarray:
+    num_positive = int(len(y_pred) * pos_ratio)
     pred_label_idx = np.argsort(y_pred)[::-1][:num_positive]
     y_pred_label = np.zeros_like(y_pred)
     y_pred_label[pred_label_idx] = 1
@@ -51,7 +52,9 @@ def opt_macro_f1_score_v2(
 ) -> dict[str, float]:
     n = len(y_pred)
     num_positive = np.sum(y_true)
-    y_pred_label = decode_v2(y_pred, num_positive)
+    pos_ratio = num_positive / n
+
+    y_pred_label = decode_v2(y_pred, pos_ratio)
     score = f1_score(y_true, y_pred_label, average="macro")
 
-    return {"num_all": n, "num_positive": num_positive, "pos_ratio": num_positive / n, "score": score}
+    return {"num_all": int(n), "num_positive": int(num_positive), "pos_ratio": pos_ratio, "score": score}
