@@ -30,6 +30,9 @@ def train_cv_tabular_v1(
     overwrite: bool = False,
     use_xgb_class_weight: bool | None = False,
     use_eval_set: bool = True,
+    binary_down_sampling_rate: float | None = None,
+    binary_down_sampling_target: int | None = 1,
+    sampling_seed: int | None = None,
 ) -> list[estimator_types]:
     """Train cv for xgboost estimator."""
     estimators = []
@@ -68,6 +71,16 @@ def train_cv_tabular_v1(
 
         # split train and valid
         train_df = df.query(f"fold != {i_fold}").reset_index(drop=True)
+
+        if binary_down_sampling_rate:
+            sampling_df = train_df[train_df[target_columns] == binary_down_sampling_target].reset_index(drop=True)
+            unsampling_df = train_df[train_df[target_columns] != binary_down_sampling_target].reset_index(drop=True)
+            sampling_df = sampling_df.sample(
+                frac=binary_down_sampling_rate,
+                random_state=sampling_seed,
+            ).reset_index(drop=True)
+            train_df = pd.concat([sampling_df, unsampling_df]).reset_index(drop=True)
+
         valid_df = df.query(f"fold == {i_fold}").query("data == 'train'").reset_index(drop=True)
         tr_x, tr_y = train_df[feature_columns], train_df[target_columns]
         va_x, va_y = valid_df[feature_columns], valid_df[target_columns]
