@@ -162,5 +162,5 @@ cython_debug/
 data/
 !data/.gitkeep
 
-resources/
+resources/*
 !resources/.gitkeep
