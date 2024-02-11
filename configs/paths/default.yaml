@@ -1,5 +1,5 @@
 # path to root directory
-root_dir: ${oc.env:HOME}/Projects/financial-data-challenge
+root_dir: ${oc.env:HOME}/Private/financial-data-challenge
 # path to resources directory
 resource_dir: ${paths.root_dir}/resources
 notebooks_dir: ${paths.root_dir}/notebooks
